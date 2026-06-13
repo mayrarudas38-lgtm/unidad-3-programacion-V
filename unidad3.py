@@ -1,26 +1,3 @@
-# =============================================================================
-# LENGUAJE DE PROGRAMACIÓN V  |  UMECIT  |  Unidad III
-# Script 4: PLANTILLA — Actividad N.° 3
-#           Simplex + Análisis de Sensibilidad + Gráficas
-# =============================================================================
-#
-# INSTRUCCIONES PARA EL EQUIPO:
-#   1. Lee la sección "CONFIGURA TU PROBLEMA" y reemplaza los valores
-#      con los datos de tu problema real.
-#   2. Ejecuta: python U3_Script4_Plantilla_Actividad3.py
-#   3. Comprueba que la solución es correcta.
-#   4. Sube los PNG generados a tu presentación interactiva.
-#   5. Sube este archivo a GitHub o Google Colab y genera el QR con:
-#      https://qr-code-generator.com/
-#
-# El ejemplo pre-cargado usa los datos del curso (Fábrica de Muebles)
-# para que puedas verificar que tu instalación funciona antes de
-# adaptar el script a tu propio problema.
-#
-# INSTALACIÓN:  pip install pulp scipy matplotlib numpy
-# EJECUCIÓN:    python U3_Script4_Plantilla_Actividad3.py
-# =============================================================================
-
 from pulp import *
 from scipy.optimize import linprog
 import numpy as np
@@ -30,42 +7,45 @@ import matplotlib.pyplot as plt
 # ╔══════════════════════════════════════════════════════════════════════╗
 # ║  CONFIGURA TU PROBLEMA AQUÍ  (edita SOLO esta sección)              ║
 # ╠══════════════════════════════════════════════════════════════════════╣
-# ║  Ejemplo pre-cargado: Fábrica de Mesas y Sillas (datos del curso)   ║
+# ║  Caso adaptado: Agroindustrias del Istmo                             ║
 # ║  Para tu problema: reemplaza los valores marcados con ←             ║
 # ╚══════════════════════════════════════════════════════════════════════╝
 
 # Nombre de tu empresa o problema
-NOMBRE = "Fabrica_Mesas_y_Sillas"          # ← Cambia aquí
+NOMBRE = "Agroindustrias_del_Istmo"        # ← Cambia aquí
 
 # Coeficientes de la función objetivo (utilidad por unidad)
-C_OBJ  = [50.0, 30.0]                      # ← [c₁, c₂]
+C_OBJ  = [12.0, 15.0]                      # ← [c₁, c₂] (Piña, Mango)
 
 # Matriz de coeficientes de las restricciones
 A_UB   = [
-    [4.0, 2.0],                             # ← Restricción 1
-    [2.0, 3.0],                             # ← Restricción 2
+    [0.8, 1.0],                             # ← Restricción 1: Procesamiento
+    [0.5, 0.75],                            # ← Restricción 2: Empaque
+    [0.4, 0.6],                             # ← Restricción 3: Materia Prima
 ]
 
 # Lado derecho de cada restricción (RHS)
-B_UB   = [240.0, 180.0]                    # ← [b₁, b₂]
+B_UB   = [120.0, 90.0, 80.0]               # ← [b₁, b₂, b₃]
 
 # Nombres descriptivos (para tablas y gráficas)
-NOMBRE_R = ["Carpintería (h/sem)",          # ← nombre restricción 1
-            "Pintura (h/sem)"]              # ← nombre restricción 2
+NOMBRE_R = ["Capacidad_Procesamiento (h)",  # ← nombre restricción 1
+            "Capacidad_Empaque (h)",        # ← nombre restricción 2
+            "Materia_Prima (t)"]            # ← nombre restricción 3
 
-NOMBRE_X = ["Mesas",  "Sillas"]            # ← nombre variable 1 y 2
-UNIDAD_X = ["u/sem",  "u/sem"]             # ← unidad de medida
+NOMBRE_X = ["Piña",  "Mango"]               # ← nombre variable 1 y 2
+UNIDAD_X = ["cajas",  "cajas"]              # ← unidad de medida
 
 # ── Configuración del análisis de sensibilidad ────────────────────────
-# Índice de la restricción a analizar en el RHS (0 = R1, 1 = R2)
-IDX_RHS    = 0                             # ← 0 = analizar b₁
+# Índice de la restricción a analizar en el RHS (0 = Procesamiento, 1 = Empaque, 2 = M. Prima)
+IDX_RHS    = 0                              # ← Analiza b₁ (Procesamiento, que es el recurso crítico)
 
-# Rango de variación del RHS seleccionado
-DELTA_RHS  = np.arange(-120, 181, 20)      # ← ajusta según tu problema
+# Rango de variación del RHS seleccionado (Actual: 120h)
+# Explora desde -120 (llegar a 0 horas) hasta +60 (llegar a 180 horas) en pasos de 10
+DELTA_RHS  = np.arange(-120, 61, 10)       
 
-# Rango de variación de c₁ para la sensibilidad de coeficientes
-C1_RANGO   = np.arange(5, 155, 5)          # ← ajusta según tu problema
-
+# Rango de variación de c₁ (Piña) para la sensibilidad de coeficientes (Actual: $12)
+# Explora desde $2 hasta $30 en pasos de $1 para observar cuándo cambia el plan hacia el mango
+C1_RANGO   = np.arange(2, 31, 1)
 # =============================================================================
 # A PARTIR DE AQUÍ EL SCRIPT ES AUTOMÁTICO
 # =============================================================================
