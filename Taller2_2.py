@@ -9,7 +9,7 @@ from pulp import *
 
 # ==============================================
 # PASO 1: Resolución del MODELO PRIMAL
-# ==============================================
+# =============================================
 # Crear problema de maximización
 primal = LpProblem("Primal_Produccion_Frutas", LpMaximize)
 
